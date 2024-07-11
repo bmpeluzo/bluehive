@@ -2,6 +2,12 @@
 
 ## runcry.sh
 
+set permissions:
+
+chmod 777 runcry.sh
+
+
+
 Update the .bashrc/.zshrc file:
 
 alias runcry='/home/bteixeir/scr/runcry.sh'
