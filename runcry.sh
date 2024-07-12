@@ -1,6 +1,6 @@
 #! /bin/bash
 
-while getopts j:c:r:f:F:n:p: flag
+while getopts j:c:r:f:F:n:p:v: flag
 do
 	case ${flag} in
 		j ) job_id=${OPTARG};;
@@ -10,6 +10,7 @@ do
 		p) part=${OPTARG};;
 		f) fort_file=${OPTARG};;
 		F) other_file=${OPTARG};;
+		v) version=${OPTARG};;
 	esac
 done
 
@@ -22,6 +23,15 @@ if [ -z $proj ]; then
 	job_dir='${SCRATCH}/${SLURM_JOB_ID}'
 else
 	job_dir='${SCRATCH}/'${proj}'/${SLURM_JOB_ID}'
+fi
+
+if [ -z $version ]; then
+	version='/scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal'
+else
+	case ${version} in
+	'original') version='Pcrystal';;
+	'barbara') version='/scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal'
+	esac
 fi
 
 ############## checking for required flags ############
@@ -140,7 +150,9 @@ cat INPUT
 
 echo \"Job ID: \${SLURM_JOB_ID}\"
 
-mpirun  /scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal
+export I_MPI_PMI_LIBRARY=/software/slurm/current/lib/libpmi.so
+
+srun  /scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal
 
 " > ${job_id}.sbatch
 
