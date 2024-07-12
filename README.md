@@ -23,8 +23,8 @@ required flags:
 -p cluster partition (teraeth, vermont)
 
 optional flags:
--r project - project name for organization
--n number of nodes
+-r project - project name for a better organization
+-n number of nodes. Default: 1
 -f additional file e.g. file1.f9, file2.f33...
 -F additional file e.g. FREQINFO.DAT
-
+-v version. Options: original, barbara. Default: barbara
