@@ -424,7 +424,7 @@ if [ -e HESSFREQ.DAT ]
 then
    cp HESSFREQ.DAT \${SLURM_SUBMIT_DIR}/${job_id}.hessfreq
 fi
----------------------------------------------------- " >> ${job_id}.sbatch
+# ---------------------------------------------------- " >> ${job_id}.sbatch
 
 fi
 sbatch ${job_id}.sbatch
