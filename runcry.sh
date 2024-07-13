@@ -143,18 +143,8 @@ fi
 if [ -e ${job_id}.hessopt ]; then
 	cp ${job_id}.hessopt \${job_dir}/HESSOPT.DAT
 fi
-
-cd \${job_dir}
-
-cat INPUT
-
-echo \"Job ID: \${SLURM_JOB_ID}\"
-
-export I_MPI_PMI_LIBRARY=/software/slurm/current/lib/libpmi.so
-
-srun  /scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal
-
 " > ${job_id}.sbatch
+
 
 # It defaults to read files from units with the same name as the input, In case the user wants to specify an additional FORT file to be read:
 
@@ -182,10 +172,20 @@ fi
 
 #################################################################################
 
+############################## Running CRYSTAL #####################################
+
+echo "cd \${job_dir}
+
+cat INPUT
+
+echo \"Job ID: \${SLURM_JOB_ID}\"
+
+export I_MPI_PMI_LIBRARY=/software/slurm/current/lib/libpmi.so
+
+srun  /scratch/mruggie8_lab/software/CRYSTAL/CRYSTAL_BARBARA/CRY23/bin/bluehive_impi_nodebug/std/Pcrystal
 
 
-	
-echo "
+
 ################## copying output files ########################
 
 if [ -e KAPPA.DAT ]
