@@ -11,7 +11,7 @@ def file_io(cry_out):   # open crystal output file and store file content as str
 	return cry_str
 
 
-def get_scf_cycles(cry_out):
+def get_scf_cycles(cry_out): # get the number of scf cycles
 	for line in range(len(file_io(cry_out))):
 		scf_str=file_io(cry_out)[line].find("SCF ENDED")
 		if scf_str!=-1:
@@ -20,7 +20,7 @@ def get_scf_cycles(cry_out):
 	return(n_scf)
 
 
-def get_telapse(cry_out):
+def get_telapse(cry_out):  # get the telapse time
 	for line in range(len(file_io(cry_out))):
 		telapse_str=file_io(cry_out)[line].find("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END")
 		if telapse_str!=-1:
@@ -33,7 +33,7 @@ def get_telapse(cry_out):
 	return(telapse)
 
 
-def get_tcpu(cry_out):
+def get_tcpu(cry_out): # get the cpu time
 	for line in range(len(file_io(cry_out))):
 		tcpu_str=file_io(cry_out)[line].find("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END")
 		if tcpu_str!=-1:
@@ -45,8 +45,27 @@ def get_tcpu(cry_out):
 			break
 	return(tcpu)
 
+##################### loop over files ########################
 
+import numpy as np
 
-print(get_tcpu('../tests/crystal_compilation/ice_sp_barbara.out'))
+path='/home/bteixeir/parallel_tests/'
+part='teraeth'
+n_nodes='1'
+sys='ice'
+calc='sp'
+vers='barbara'
+
+out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
+out_file.write('n_cores\tn_scf\tt_elapse\tt_cpu')
+
+for i in np.arange(4,68,4):
+    cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
+    n_scf=get_scf_cycles(cry_out=cry_out)
+    telapse=get_telapse(cry_out=cry_out)
+    tcpu=get_tcpu(cry_out=cry_out)
+    out_file.write('%d\t%d\t%f\t%f\n'%(i,n_scf,telapse,tcpu))
+
+out_file.close()
 
 
