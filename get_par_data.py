@@ -35,15 +35,19 @@ def get_telapse(cry_out):  # get the telapse time
 
 def get_tcpu(cry_out): # get the cpu time
 	for line in range(len(file_io(cry_out))):
-		tcpu_str=file_io(cry_out)[line].find("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END")
+		tcpu_str=file_io(cry_out)[line].find("TOTAL CPU TIME")
 		if tcpu_str!=-1:
-			for i in range(len(file_io(cry_out)[line].split())):
-				tcpu_str2=file_io(cry_out)[line].split()[i].find("TCPU")
-				if tcpu_str2!=-1:
-					tcpu=float(file_io(cry_out)[line].split()[i+1])
-					break
+			tcpu=float(file_io(cry_out)[line].split()[len(file_io(cry_out)[line].split())-1])
 			break
 	return(tcpu)
+
+def get_opt_cycles(cry_out):
+	for line in range(len(file_io(cry_out))):
+		opt_str=file_io(cry_out)[line].find("OPT END")
+		if opt_str!=-1:
+			n_opt=int(file_io(cry_out)[line].split()[len(file_io(cry_out)[line].split())-2])
+			break
+	return(n_opt)
 
 ##################### loop over files ########################
 
@@ -53,19 +57,25 @@ path='/home/bteixeir/parallel_tests/'
 part='teraeth'
 n_nodes='1'
 sys='ice'
-calc='sp'
-vers='barbara'
+list_calc=['sp', 'opt', 'freq']
+list_vers=['barbara']#,'original']
 
-out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
-out_file.write('n_cores\tn_scf\tt_elapse\tt_cpu')
+for vers in list_vers:
+    
+    for calc in list_calc:
+        out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
+        out_file.write('n_cores\tn_cyc\tt_elapse\tt_cpu\n')
 
-for i in np.arange(4,68,4):
-    cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
-    n_scf=get_scf_cycles(cry_out=cry_out)
-    telapse=get_telapse(cry_out=cry_out)
-    tcpu=get_tcpu(cry_out=cry_out)
-    out_file.write('%d\t%d\t%f\t%f\n'%(i,n_scf,telapse,tcpu))
+        for i in np.arange(4,68,4):
+            cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
+            telapse=get_telapse(cry_out=cry_out)
+            tcpu=get_tcpu(cry_out=cry_out)
+            if calc == 'opt':
+                n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
+            else:
+                n_cyc=get_scf_cycles(cry_out=cry_out)
+            out_file.write('%d\t%d\t%f\t%f\n'%(i,n_cyc,telapse,tcpu))
 
-out_file.close()
+        out_file.close()
 
 
