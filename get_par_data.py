@@ -57,15 +57,15 @@ path='/home/bteixeir/parallel_tests/'
 part='teraeth'
 n_nodes='1'
 sys='ice'
-list_calc=['sp', 'opt', 'freq']
-list_vers=['barbara']#,'original']
+list_calc=['sp', 'opt']#, 'freq']
+list_vers=['barbara']
 
 for vers in list_vers:
     
     for calc in list_calc:
         out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
-        out_file.write('n_cores\tn_cyc\tt_elapse\tt_cpu\n')
-
+        out_file.write('n_cores\tn_cyc\tt_elapse\tt_cpu\tpar_eff\n')
+        t_serial=get_telapse(path+'%s/%snode/%s/%s/%s_%s_1.out'%(part,n_nodes,sys,vers,sys,calc))
         for i in np.arange(4,68,4):
             cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
             telapse=get_telapse(cry_out=cry_out)
@@ -74,8 +74,8 @@ for vers in list_vers:
                 n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
             else:
                 n_cyc=get_scf_cycles(cry_out=cry_out)
-            out_file.write('%d\t%d\t%f\t%f\n'%(i,n_cyc,telapse,tcpu))
-
+            par_eff=(t_serial/(telapse*i))*100
+            out_file.write('%d\t%d\t%f\t%f\t%.1f\n'%(i,n_cyc,telapse,tcpu,par_eff))
         out_file.close()
 
 
