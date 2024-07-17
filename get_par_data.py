@@ -65,6 +65,7 @@ for vers in list_vers:
     for calc in list_calc:
         out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
         out_file.write('n_cores\tn_cyc\tt_elapse\tt_cpu\tpar_eff\n')
+        tex_file=open(path+'results_%s_%snode_%s_%s_%s.tex'%(part,n_nodes,sys,vers,calc),'w+')
         t_serial=get_telapse(path+'%s/%snode/%s/%s/%s_%s_1.out'%(part,n_nodes,sys,vers,sys,calc))
         for i in np.arange(4,68,4):
             cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
@@ -76,6 +77,8 @@ for vers in list_vers:
                 n_cyc=get_scf_cycles(cry_out=cry_out)
             par_eff=(t_serial/(telapse*i))*100
             out_file.write('%d\t%d\t%f\t%f\t%.1f\n'%(i,n_cyc,telapse,tcpu,par_eff))
+            tex_file.write('%d & %.1f & %.1f \\\\ \n'%(i,telapse,par_eff))
         out_file.close()
+        tex_file.close()
 
 
