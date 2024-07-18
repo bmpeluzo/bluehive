@@ -55,7 +55,7 @@ import numpy as np
 
 path='/home/bteixeir/parallel_tests/'
 part='teraeth'
-n_nodes='2'
+n_nodes=2
 sys='ice'
 list_calc=['sp', 'opt', 'freq']
 list_vers=['barbara']
@@ -66,7 +66,7 @@ for vers in list_vers:
         out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,sys,vers,calc),'w+')
         out_file.write('n_nodes\tn_tasks_per_node\tn_cores\tn_cyc\tt_elapse\tt_cpu\tpar_eff\n')
         tex_file=open(path+'results_%s_%snode_%s_%s_%s.tex'%(part,n_nodes,sys,vers,calc),'w+')
-        t_serial=get_telapse(path+'%s/%snode/%s/%s/%s_%s_1.out'%(part,n_nodes,sys,vers,sys,calc))
+        t_serial=get_telapse(path+'%s/1node/%s/%s/%s_%s_1.out'%(part,sys,vers,sys,calc))
         for i in np.arange(4,68,4):
             print('%d cores' %i)
             cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,sys,calc,i)
