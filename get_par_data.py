@@ -57,7 +57,7 @@ path='/home/bteixeir/parallel_tests/'
 part='teraeth'
 n_nodes=2
 sys='ice'
-list_calc=['sp', 'opt', 'freq']
+list_calc=['sp', 'opt']#, 'freq']
 list_vers=['barbara']
 
 for vers in list_vers:
@@ -76,7 +76,7 @@ for vers in list_vers:
                 n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
             else:
                 n_cyc=get_scf_cycles(cry_out=cry_out)
-            par_eff=(t_serial/(telapse*i))*100
+            par_eff=(t_serial/(telapse*i*n_nodes))*100
             out_file.write('%d\t%d\t%d\t%d\t%f\t%f\t%.1f\n'%(n_nodes,i,n_nodes*i,n_cyc,telapse,tcpu,par_eff))
             tex_file.write('%d & %d & %d & %.1f & %.1f \\\\ \n'%(n_nodes,i,n_nodes*i,telapse,par_eff))
         out_file.close()
