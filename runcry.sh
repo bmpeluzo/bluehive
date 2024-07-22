@@ -450,4 +450,4 @@ fi
 # ---------------------------------------------------- " >> ${job_id}.sbatch
 
 fi
-#sbatch ${job_id}.sbatch
+sbatch ${job_id}.sbatch
