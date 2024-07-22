@@ -45,11 +45,22 @@ elif [ -z $part ]; then
 	echo "Partition not specified"
 	exit
 else
-	echo "#!/bin/bash
+	if [[ $part == vermont1 ]]; then
+		echo "#!/bin/bash
+#SBATCH -p ${part[@]:0:${#part}-1} -t 30-0:00:00 -o ${job_id}.out
+#SBATCH -N ${nodes} --ntasks-per-node=${cores} --mem=0 
+#SBATCH --exclude=bhx[0131-0136]" > ${job_id}.sbatch
+	elif [[ $part == vermont2 ]]; then
+		echo "#!/bin/bash
+#SBATCH -p ${part[@]:0:${#part}-1} -t 30-0:00:00 -o ${job_id}.out
+#SBATCH -N ${nodes} --ntasks-per-node=${cores} --mem=0 
+#SBATCH --exclude=bhx[0111-0129]" > ${job_id}.sbatch
+	elif [[ $part == teraeth ]]; then
+		echo "#!/bin/bash
 #SBATCH -p ${part} -t 30-0:00:00 -o ${job_id}.out
-#SBATCH -N ${nodes} --ntasks-per-node=${cores} --mem=0 -C Gold6448Y,ib
-
-module load /scratch/mruggie8_lab/software/modulefiles/crystal/b2
+#SBATCH -N ${nodes} --ntasks-per-node=${cores} --mem=0 -C Gold6448Y,ib " > ${job_id}.sbatch
+	fi
+	echo "module load /scratch/mruggie8_lab/software/modulefiles/crystal/b2
 
 job_dir=${job_dir}
 mkdir -p \${job_dir}
@@ -143,7 +154,7 @@ fi
 if [ -e ${job_id}.hessopt ]; then
 	cp ${job_id}.hessopt \${job_dir}/HESSOPT.DAT
 fi
-" > ${job_id}.sbatch
+" >> ${job_id}.sbatch
 
 
 # It defaults to read files from units with the same name as the input, In case the user wants to specify an additional FORT file to be read:
@@ -439,4 +450,4 @@ fi
 # ---------------------------------------------------- " >> ${job_id}.sbatch
 
 fi
-sbatch ${job_id}.sbatch
+#sbatch ${job_id}.sbatch
