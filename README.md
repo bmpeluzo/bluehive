@@ -38,3 +38,9 @@ optional flags:
 -F additional file e.g. FREQINFO.DAT
 
 -v version. Options: original, barbara. Default: barbara
+
+
+to use the vermont paertition:
+
+`-p vermont1` set of nodes: bhx[0111-0129] total of 19 nodes
+`-p vermont2` set of nodes: bhx[0131-0136] total of 6 nodes
