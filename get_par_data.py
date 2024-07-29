@@ -57,9 +57,10 @@ path='/home/bteixeir/parallel_tests/'
 part='teraeth'
 n_nodes=1
 sys='ice'
-list_calc=['sp', 'opt', 'freq']
+list_calc=['sp']
 list_vers=['barbara']
 dft='pbe'
+run=1
 
 if dft == 'b3lyp':
     name=sys
@@ -72,20 +73,23 @@ for vers in list_vers:
         out_file=open(path+'results_%s_%snode_%s_%s_%s.dat'%(part,n_nodes,name,vers,calc),'w+')
         out_file.write('n_nodes\tn_tasks_per_node\tn_cores\tn_cyc\tt_elapse\tt_cpu\tpar_eff\n')
         tex_file=open(path+'results_%s_%snode_%s_%s_%s.tex'%(part,n_nodes,name,vers,calc),'w+')
-        t_serial=get_telapse(path+'%s/1node/%s/%s/%s_%s_1.out'%(part,sys,vers,name,calc))
-        for i in np.arange(4,68,4):
-            print('%d cores' %i)
-            cry_out=path+'%s/%snode/%s/%s/%s_%s_%s.out'%(part,n_nodes,sys,vers,name,calc,i)
-            telapse=get_telapse(cry_out=cry_out)
-            tcpu=get_tcpu(cry_out=cry_out)
-            if calc == 'opt':
-                n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
-            else:
-                n_cyc=get_scf_cycles(cry_out=cry_out)
-            par_eff=(t_serial/(telapse*i*n_nodes))*100
-            out_file.write('%d\t%d\t%d\t%d\t%f\t%f\t%.1f\n'%(n_nodes,i,n_nodes*i,n_cyc,telapse,tcpu,par_eff))
-            tex_file.write('%d & %d & %d & %.1f & %.1f \\\\ \n'%(n_nodes,i,n_nodes*i,telapse,par_eff))
-        out_file.close()
-        tex_file.close()
-
-
+        t_serial=get_telapse(path+'%s/1node/%s/%s/%d/%s_%s_1.out'%(part,sys,vers,run,name,calc))
+    if n_nodes == 1:
+        cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_1.out'%(part,n_nodes,sys,vers,run,name,calc)
+        telapse=get_telapse(cry_out=cry_out)
+        tcpu=get_tcpu(cry_out=cry_out)
+        tex_file.write('%d & 1 & %d & %.1f & 100 \\\\ \n'%(n_nodes,n_nodes*1,telapse))
+    for i in np.arange(4,68,4):
+        print('%d cores' %i)
+        cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_%s.out'%(part,n_nodes,sys,vers,run,name,calc,i)
+        telapse=get_telapse(cry_out=cry_out)
+        tcpu=get_tcpu(cry_out=cry_out)
+        if calc == 'opt':
+            n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
+        else:
+            n_cyc=get_scf_cycles(cry_out=cry_out)
+        par_eff=(t_serial/(telapse*i*n_nodes))*100
+        out_file.write('%d\t%d\t%d\t%d\t%f\t%f\t%.1f\n'%(n_nodes,i,n_nodes*i,n_cyc,telapse,tcpu,par_eff))
+        tex_file.write('%d & %d & %d & %.1f & %.1f \\\\ \n'%(n_nodes,i,n_nodes*i,telapse,par_eff))
+    out_file.close()
+    tex_file.close()
