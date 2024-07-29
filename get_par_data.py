@@ -54,13 +54,16 @@ def get_opt_cycles(cry_out):
 import numpy as np
 
 path='/home/bteixeir/parallel_tests/'
-part='teraeth'
+part='vermont1'
 n_nodes=1
 sys='ice'
 list_calc=['sp']
 list_vers=['barbara']
-dft='pbe'
+dft='b3lyp'
 run=1
+init_core=4
+final_core=48
+step_core=4
 
 if dft == 'b3lyp':
     name=sys
@@ -79,7 +82,7 @@ for vers in list_vers:
         telapse=get_telapse(cry_out=cry_out)
         tcpu=get_tcpu(cry_out=cry_out)
         tex_file.write('%d & 1 & %d & %.1f & 100 \\\\ \n'%(n_nodes,n_nodes*1,telapse))
-    for i in np.arange(4,68,4):
+    for i in np.arange(init_core,final_core+1,step_core):
         print('%d cores' %i)
         cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_%s.out'%(part,n_nodes,sys,vers,run,name,calc,i)
         telapse=get_telapse(cry_out=cry_out)
