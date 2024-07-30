@@ -60,10 +60,10 @@ sys='ice'
 #list_calc=['sp']
 calc='sp'
 vers='barbara'
-dft='pbe'
+dft='b3lyp'
 run=1
 init_core=4
-final_core=48
+final_core=64
 step_core=4
 
 if dft == 'b3lyp':
@@ -91,26 +91,37 @@ for n_nodes in list_nodes:
                 tex_file.write('\\\\ \n')
                 out_file.write('\n')
     for i in np.arange(init_core,final_core+1,step_core):
-        tex_file.write('%d & %d & %d &' %(n_nodes, i, n_nodes*i)) 
-        out_file.write('%d\t%d\t%d\t' %(n_nodes, i, n_nodes*i)) 
         for part in list_part: 
-            t_serial=get_telapse(path+'%s/1node/%s/%s/%d/%s_%s_1.out'%(part,sys,vers,run,name,calc))
-            cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_%s.out'%(part,n_nodes,sys,vers,run,name,calc,i)
-            telapse=get_telapse(cry_out=cry_out)
+            if part in ['vermont1', 'vermont2'] and i > 48:
+                tex_file.write('N/A & N/A & N/A &') 
+                out_file.write('NAN\tnan\tnan\t') 
+                tex_file.write('N/A & N/A & N/A')
+                out_file.write('nan\tnan\tnan')
+                if part == list_part[len(list_part)-1]:
+                    tex_file.write('\\\\ \n')
+                    out_file.write('\n')
+                else:
+                    tex_file.write('&')
+            else:
+                tex_file.write('%d & %d & %d &' %(n_nodes, i, n_nodes*i)) 
+                out_file.write('%d\t%d\t%d\t' %(n_nodes, i, n_nodes*i)) 
+                t_serial=get_telapse(path+'%s/1node/%s/%s/%d/%s_%s_1.out'%(part,sys,vers,run,name,calc))
+                cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_%s.out'%(part,n_nodes,sys,vers,run,name,calc,i)
+                telapse=get_telapse(cry_out=cry_out)
             #tcpu=get_tcpu(cry_out=cry_out)
         #if calc == 'opt':
             #n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
         #else:
             #n_cyc=get_scf_cycles(cry_out=cry_out)
-            par_eff=(t_serial/(telapse*i*n_nodes))*100
-            speedup=t_serial/telapse
-            tex_file.write(' %.1f & %.2f & %.2f'%(telapse,speedup,par_eff))
-            out_file.write('%.1f\t%.2f\t%.2f'%(telapse,speedup,par_eff))
-            if part == list_part[len(list_part)-1]:
-                tex_file.write('\\\\ \n')
-                out_file.write('\n')
-            else:
-                tex_file.write('&')
+                par_eff=(t_serial/(telapse*i*n_nodes))*100
+                speedup=t_serial/telapse
+                tex_file.write(' %.1f & %.2f & %.2f'%(telapse,speedup,par_eff))
+                out_file.write('%.1f\t%.2f\t%.2f'%(telapse,speedup,par_eff))
+                if part == list_part[len(list_part)-1]:
+                    tex_file.write('\\\\ \n')
+                    out_file.write('\n')
+                else:
+                    tex_file.write('&')
         #out_file.write('%d\t%d\t%d\t%d\t%f\t%f\t%.1f\n'%(n_nodes,i,n_nodes*i,n_cyc,telapse,tcpu,par_eff))
 out_file.close()
 tex_file.close()
