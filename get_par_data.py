@@ -72,7 +72,7 @@ else:
     name=sys+'_'+dft
 
 out_file=open(path+'results_%s_%s.dat'%(name,calc),'w+')
-out_file.write('n_nodes\tn_tasks_per_node\tn_cores\tt_elapse_teraeth\tt_cpu_teraeth\tspeed_up_teraeth\tpar_eff_teraeth\tt_elapse_vermont1\tt_cpu_vermont1\tspeed_up_vermont1\tpar_eff_vermont1\tt_elapse_vermont2\tt_cpu_vermont2\tspeed_up_vermont2\tpar_eff_vermont2\n')
+out_file.write('n_nodes\tn_tasks_per_node\tn_cores\tt_elapse_teraeth\tspeed_up_teraeth\tpar_eff_teraeth\tt_elapse_vermont1\tspeed_up_vermont1\tpar_eff_vermont1\tt_elapse_vermont2\tspeed_up_vermont2\tpar_eff_vermont2\n')
 tex_file=open(path+'results_%s_%s.tex'%(name,calc),'w+')
 
 for n_nodes in list_nodes:
@@ -85,34 +85,31 @@ for n_nodes in list_nodes:
             cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_1.out'%(part,n_nodes,sys,vers,run,name,calc)
             telapse=get_telapse(cry_out=cry_out)
             #tcpu=get_tcpu(cry_out=cry_out)
-            tex_file.write(' %.1f &  N/A & N/A &'%(telapse))
+            tex_file.write(' %.1f &  N/A & N/A'%(telapse))
             out_file.write('%.1f\t1\t100'%(telapse))
             if part == list_part[len(list_part)-1]:
                 tex_file.write('\\\\ \n')
                 out_file.write('\n')
+            else:
+                tex_file.write('&')
+                out_file.write('\t')
     for i in np.arange(init_core,final_core+1,step_core):
+        tex_file.write('%d & %d & %d &' %(n_nodes, i, n_nodes*i)) 
+        out_file.write('%d\t%d\t%d\t' %(n_nodes, i, n_nodes*i)) 
         for part in list_part: 
             if part in ['vermont1', 'vermont2'] and i > 48:
-                tex_file.write('N/A & N/A & N/A &') 
-                out_file.write('NAN\tnan\tnan\t') 
                 tex_file.write('N/A & N/A & N/A')
                 out_file.write('nan\tnan\tnan')
                 if part == list_part[len(list_part)-1]:
                     tex_file.write('\\\\ \n')
                     out_file.write('\n')
                 else:
+                    out_file.write('\t')
                     tex_file.write('&')
             else:
-                tex_file.write('%d & %d & %d &' %(n_nodes, i, n_nodes*i)) 
-                out_file.write('%d\t%d\t%d\t' %(n_nodes, i, n_nodes*i)) 
                 t_serial=get_telapse(path+'%s/1node/%s/%s/%d/%s_%s_1.out'%(part,sys,vers,run,name,calc))
                 cry_out=path+'%s/%snode/%s/%s/%d/%s_%s_%s.out'%(part,n_nodes,sys,vers,run,name,calc,i)
                 telapse=get_telapse(cry_out=cry_out)
-            #tcpu=get_tcpu(cry_out=cry_out)
-        #if calc == 'opt':
-            #n_cyc=get_opt_cycles(cry_out=cry_out) ## we are not taking the number of scf cycles in a geom opt
-        #else:
-            #n_cyc=get_scf_cycles(cry_out=cry_out)
                 par_eff=(t_serial/(telapse*i*n_nodes))*100
                 speedup=t_serial/telapse
                 tex_file.write(' %.1f & %.2f & %.2f'%(telapse,speedup,par_eff))
@@ -122,6 +119,7 @@ for n_nodes in list_nodes:
                     out_file.write('\n')
                 else:
                     tex_file.write('&')
+                    out_file.write('\t')
         #out_file.write('%d\t%d\t%d\t%d\t%f\t%f\t%.1f\n'%(n_nodes,i,n_nodes*i,n_cyc,telapse,tcpu,par_eff))
 out_file.close()
 tex_file.close()
